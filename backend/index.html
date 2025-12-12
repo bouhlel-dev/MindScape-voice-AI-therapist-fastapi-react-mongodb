@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Testing Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+
+        .response.show {
+            display: block;
+        }
+
+        .response pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .error {
+            border-left-color: #dc3545;
+        }
+
+        .success {
+            border-left-color: #28a745;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 API Testing Interface</h1>
+
+        <!-- Users Section -->
+        <div class="section">
+            <h2>👥 Users Management</h2>
+            
+            <div class="form-group">
+                <label>User ID (for GET/DELETE/UPDATE):</label>
+                <input type="text" id="userId" placeholder="Enter user ID">
+            </div>
+
+            <div class="grid">
+                <button onclick="getAllUsers()">Get All Users</button>
+                <button onclick="getUserById()">Get User by ID</button>
+                <button onclick="deleteUser()">Delete User</button>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>Name:</label>
+                <input type="text" id="userName" placeholder="Enter name">
+            </div>
+
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="userEmail" placeholder="Enter email">
+            </div>
+
+            <div class="grid">
+                <button onclick="createUser()">Create User</button>
+                <button onclick="updateUser()">Update User</button>
+            </div>
+
+            <div id="userResponse" class="response"></div>
+        </div>
+
+        <!-- Messages Section -->
+        <div class="section">
+            <h2>💬 Messages</h2>
+            
+            <div class="form-group">
+                <label>User ID:</label>
+                <input type="text" id="msgUserId" placeholder="Enter user ID">
+            </div>
+
+            <button onclick="getHistory()">Get Chat History</button>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>Sender:</label>
+                <input type="text" id="msgSender" placeholder="user or ai">
+            </div>
+
+            <div class="form-group">
+                <label>Message:</label>
+                <textarea id="msgText" placeholder="Enter message"></textarea>
+            </div>
+
+            <button onclick="saveMessage()">Save Message</button>
+
+            <div id="msgResponse" class="response"></div>
+        </div>
+
+        <!-- Chat Text Section -->
+        <div class="section">
+            <h2>💭 Chat (Text)</h2>
+            
+            <div class="form-group">
+                <label>User ID:</label>
+                <input type="text" id="chatTextUserId" placeholder="Enter user ID">
+            </div>
+
+            <div class="form-group">
+                <label>Message:</label>
+                <textarea id="chatTextInput" placeholder="Enter your message"></textarea>
+            </div>
+
+            <button onclick="sendTextMessage()">Send Message</button>
+
+            <div id="chatTextResponse" class="response"></div>
+        </div>
+
+        <!-- Chat Audio Section -->
+        <div class="section">
+            <h2>🎤 Chat (Audio)</h2>
+            
+            <div class="form-group">
+                <label>User ID:</label>
+                <input type="text" id="chatAudioUserId" placeholder="Enter user ID">
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <button id="recordBtn" onclick="toggleRecording()" style="padding: 20px 40px; font-size: 18px;">
+                    🎤 Press to Record
+                </button>
+                <p id="recordStatus" style="margin-top: 10px; font-weight: 600; color: #667eea;"></p>
+            </div>
+
+            <div id="chatAudioResponse" class="response"></div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://127.0.0.1:8000';
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        function showResponse(elementId, data, isError = false) {
+            const el = document.getElementById(elementId);
+            el.className = `response show ${isError ? 'error' : 'success'}`;
+            el.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+
+        // Users API
+        async function getAllUsers() {
+            try {
+                const res = await fetch(`${BASE_URL}/users/`);
+                const data = await res.json();
+                showResponse('userResponse', data, !res.ok);
+            } catch (err) {
+                showResponse('userResponse', { error: err.message }, true);
+            }
+        }
+
+        async function getUserById() {
+            const userId = document.getElementById('userId').value;
+            if (!userId) return alert('Please enter user ID');
+            
+            try {
+                const res = await fetch(`${BASE_URL}/users/${userId}`);
+                const data = await res.json();
+                showResponse('userResponse', data, !res.ok);
+            } catch (err) {
+                showResponse('userResponse', { error: err.message }, true);
+            }
+        }
+
+        async function createUser() {
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            if (!name || !email) return alert('Please enter name and email');
+
+            try {
+                const res = await fetch(`${BASE_URL}/users/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email })
+                });
+                const data = await res.json();
+                showResponse('userResponse', data, !res.ok);
+            } catch (err) {
+                showResponse('userResponse', { error: err.message }, true);
+            }
+        }
+
+        async function updateUser() {
+            const userId = document.getElementById('userId').value;
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            if (!userId || !name || !email) return alert('Please enter user ID, name, and email');
+
+            try {
+                const res = await fetch(`${BASE_URL}/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email })
+                });
+                const data = await res.json();
+                showResponse('userResponse', data, !res.ok);
+            } catch (err) {
+                showResponse('userResponse', { error: err.message }, true);
+            }
+        }
+
+        async function deleteUser() {
+            const userId = document.getElementById('userId').value;
+            if (!userId) return alert('Please enter user ID');
+
+            try {
+                const res = await fetch(`${BASE_URL}/users/${userId}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    showResponse('userResponse', { success: 'User deleted' });
+                } else {
+                    const data = await res.json();
+                    showResponse('userResponse', data, true);
+                }
+            } catch (err) {
+                showResponse('userResponse', { error: err.message }, true);
+            }
+        }
+
+        // Messages API
+        async function getHistory() {
+            const userId = document.getElementById('msgUserId').value;
+            if (!userId) return alert('Please enter user ID');
+
+            try {
+                const res = await fetch(`${BASE_URL}/messages/history/${userId}`);
+                const data = await res.json();
+                showResponse('msgResponse', data, !res.ok);
+            } catch (err) {
+                showResponse('msgResponse', { error: err.message }, true);
+            }
+        }
+
+        async function saveMessage() {
+            const userId = document.getElementById('msgUserId').value;
+            const sender = document.getElementById('msgSender').value;
+            const message = document.getElementById('msgText').value;
+            if (!userId || !sender || !message) return alert('Please fill all fields');
+
+            try {
+                const formData = new FormData();
+                formData.append('user_id', userId);
+                formData.append('sender', sender);
+                formData.append('message', message);
+
+                const res = await fetch(`${BASE_URL}/messages/save`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                showResponse('msgResponse', data, !res.ok);
+            } catch (err) {
+                showResponse('msgResponse', { error: err.message }, true);
+            }
+        }
+
+        // Chat Text API
+        async function sendTextMessage() {
+            const userId = document.getElementById('chatTextUserId').value;
+            const inputText = document.getElementById('chatTextInput').value;
+            if (!userId || !inputText) return alert('Please fill all fields');
+
+            try {
+                const formData = new FormData();
+                formData.append('user_id', userId);
+                formData.append('input_text', inputText);
+
+                const res = await fetch(`${BASE_URL}/chat/text`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (res.ok && data.audio_url) {
+                    const responseHtml = `
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        <audio controls src="${data.audio_url}"></audio>
+                    `;
+                    const el = document.getElementById('chatTextResponse');
+                    el.className = 'response show success';
+                    el.innerHTML = responseHtml;
+                } else {
+                    showResponse('chatTextResponse', data, !res.ok);
+                }
+            } catch (err) {
+                showResponse('chatTextResponse', { error: err.message }, true);
+            }
+        }
+
+        // Chat Audio API with Recording
+        async function toggleRecording() {
+            const userId = document.getElementById('chatAudioUserId').value;
+            if (!userId && !isRecording) {
+                return alert('Please enter user ID');
+            }
+
+            if (!isRecording) {
+                // Start recording
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        await sendAudioMessage(audioBlob, userId);
+                        
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    document.getElementById('recordBtn').textContent = '⏹️ Stop Recording';
+                    document.getElementById('recordBtn').style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+                    document.getElementById('recordStatus').textContent = 'Recording...';
+                } catch (err) {
+                    alert('Could not access microphone: ' + err.message);
+                }
+            } else {
+                // Stop recording
+                mediaRecorder.stop();
+                isRecording = false;
+                document.getElementById('recordBtn').textContent = '🎤 Press to Record';
+                document.getElementById('recordBtn').style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                document.getElementById('recordStatus').textContent = 'Processing...';
+            }
+        }
+
+        async function sendAudioMessage(audioBlob, userId) {
+            try {
+                const formData = new FormData();
+                formData.append('user_id', userId);
+                formData.append('file', audioBlob, 'recording.wav');
+
+                const res = await fetch(`${BASE_URL}/chat/audio`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                document.getElementById('recordStatus').textContent = '';
+                
+                if (res.ok && data.audio_url) {
+                    const responseHtml = `
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        <audio controls src="${data.audio_url}"></audio>
+                    `;
+                    const el = document.getElementById('chatAudioResponse');
+                    el.className = 'response show success';
+                    el.innerHTML = responseHtml;
+                } else {
+                    showResponse('chatAudioResponse', data, !res.ok);
+                }
+            } catch (err) {
+                document.getElementById('recordStatus').textContent = '';
+                showResponse('chatAudioResponse', { error: err.message }, true);
+            }
+        }
+    </script>
+</body>
+</html>

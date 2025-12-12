@@ -1,0 +1,67 @@
+uvicorn main:app --reload
+👉 http://127.0.0.1:8000
+👉 Docs: http://127.0.0.1:8000/docs (Swagger UI)
+👉 ReDoc: http://127.0.0.1:8000/redoc
+------------------------------------------------------------
+# ============================================
+# README.md
+# ============================================
+# AI Therapist API
+
+FastAPI backend with MongoDB Atlas for AI therapist application.
+
+## Setup
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Create `.env` file:
+```bash
+cp .env.example .env
+```
+
+3. Update `.env` with your MongoDB Atlas credentials
+
+4. Run the application:
+```bash
+uvicorn main:app --reload
+```
+
+## API Endpoints
+
+### Users
+- `POST /users/` - Create a new user
+- `GET /users/{user_id}` - Get user by ID
+
+### Messages
+- `POST /messages/` - Create a message
+- `GET /messages/user/{user_id}` - Get user messages
+- `GET /messages/session/{user_id}/{session_id}` - Get session messages
+
+## Collections
+
+Collections are automatically created on startup:
+- **users** - User accounts
+- **messages** - Therapy conversation messages
+
+## Structure
+
+```
+backend/
+├── main.py
+├── db.py
+├── routers/
+│   ├── user.py
+│   └── message.py
+├── models/
+│   ├── user.py
+│   └── message.py
+├── services/
+│   ├── user_service.py
+│   └── message_service.py
+├── .env.example
+├── requirements.txt
+└── README.md
+```

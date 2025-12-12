@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Therapist</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background-image: url("/src/assets/background.png");
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+        }
+        .circle {
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            background: linear-gradient(to left, rgb(255, 85, 0), rgb(380, 550, 0, 436));
+            transition: transform 0.3s ease-in-out;
+        }
+        .pulse {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+        .btn {
+            padding: 16px 20px;
+            font-size: 18px;
+            font-weight: 500;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffea00;
+            border: none;
+            border-radius: 35px;
+            cursor: pointer;
+            margin-top: 100px;
+            background: linear-gradient(rgb(255 249 98 / 98%), rgb(380, 550, 0, 436));
+        }
+        .btn:hover {
+            background-color: #e0c800;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="circle"></div>  <!-- Animated Yellow Circle -->
+
+    <button class="btn" onclick="startRecording()">🎤 Tap to Speak</button>  
+
+    <script>
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const mediaRecorder = new MediaRecorder(stream);
+                let audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const formData = new FormData();
+                    formData.append('file', audioBlob);
+
+                    const response = await fetch('http://127.0.0.1:8000/chat/audio', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    playAudio(data.audio_url);
+                };
+
+                mediaRecorder.start();
+                setTimeout(() => mediaRecorder.stop(), 5000);
+            } catch (error) {
+                alert("Recording error: " + error);
+            }
+        }
+
+        function playAudio(url) {
+            const circle = document.querySelector(".circle");
+            const audio = new Audio(url);
+
+            audio.onplay = () => circle.classList.add("pulse");
+            audio.onended = () => circle.classList.remove("pulse");
+
+            audio.play().catch(err => console.error("❌ Audio Play Error:", err));
+        }
+    </script>
+
+</body>
+</html>
