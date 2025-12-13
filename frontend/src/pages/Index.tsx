@@ -7,17 +7,20 @@ import Sidebar from "@/components/Sidebar";
 import LiquidSphere from "@/components/LiquidSphere";
 import ChatMessage from "@/components/ChatMessage";
 import ChatInput from "@/components/ChatInput";
+import Auth from "@/pages/Auth";
 import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
 import { 
   sendTextMessage, 
   sendAudioMessage, 
-  getOrCreateUserId,
   getUserSessions,
   createSession,
   getSessionMessages,
   deleteSession,
+  getStoredUser,
+  clearStoredUser,
   Session,
-  Message as ApiMessage
+  Message as ApiMessage,
+  UserResponse
 } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
@@ -30,6 +33,8 @@ interface Message {
 type ChatMode = "voice" | "text";
 
 const Index = () => {
+  const [user, setUser] = useState<UserResponse | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -48,19 +53,29 @@ const Index = () => {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [sessionsLoading, setSessionsLoading] = useState(true);
   
+  // Check for stored user on mount
+  useEffect(() => {
+    const storedUser = getStoredUser();
+    if (storedUser) {
+      setUser(storedUser);
+    }
+    setAuthChecked(true);
+  }, []);
+
   const { isRecording, startRecording, stopRecording } = useVoiceRecorder();
   const { toast } = useToast();
-  const userId = useRef(getOrCreateUserId());
   const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
 
-  // Load sessions on mount
+  // Load sessions when user is set
   useEffect(() => {
-    loadSessions();
-  }, []);
+    if (user) {
+      loadSessions();
+    }
+  }, [user]);
 
   // Auto-scroll when messages change
   useEffect(() => {
@@ -70,9 +85,10 @@ const Index = () => {
   }, [messages]);
 
   const loadSessions = async () => {
+    if (!user) return;
     try {
       setSessionsLoading(true);
-      const userSessions = await getUserSessions(userId.current);
+      const userSessions = await getUserSessions(user.id);
       setSessions(userSessions);
     } catch (error) {
       console.error("Error loading sessions:", error);
@@ -82,8 +98,9 @@ const Index = () => {
   };
 
   const handleNewSession = async () => {
+    if (!user) return;
     try {
-      const newSession = await createSession(userId.current, "New Session");
+      const newSession = await createSession(user.id, "New Session");
       setSessions((prev) => [newSession, ...prev]);
       setCurrentSessionId(newSession.id);
       setMessages([
@@ -180,11 +197,13 @@ const Index = () => {
 
   // Create session if needed and return session ID
   const ensureSession = async (): Promise<string> => {
+    if (!user) throw new Error("User not authenticated");
+    
     if (currentSessionId) {
       return currentSessionId;
     }
     
-    const newSession = await createSession(userId.current, "New Session");
+    const newSession = await createSession(user.id, "New Session");
     setSessions((prev) => [newSession, ...prev]);
     setCurrentSessionId(newSession.id);
     return newSession.id;
@@ -303,7 +322,7 @@ const Index = () => {
           const sessionId = await ensureSession();
           
           // Send audio to backend with session ID
-          const response = await sendAudioMessage(userId.current, audioBlob, sessionId);
+          const response = await sendAudioMessage(user!.id, audioBlob, sessionId);
           
           // Update session title in local state if it changed
           await loadSessions();
@@ -356,7 +375,7 @@ const Index = () => {
       // Ensure we have a session
       const sessionId = await ensureSession();
       
-      const response = await sendTextMessage(userId.current, content, sessionId);
+      const response = await sendTextMessage(user!.id, content, sessionId);
 
       const aiMessage: Message = {
         id: Date.now() + 1,
@@ -390,6 +409,34 @@ const Index = () => {
     setChatMode("text");
   };
 
+  const handleLogout = () => {
+    clearStoredUser();
+    setUser(null);
+    setSessions([]);
+    setCurrentSessionId(null);
+    setMessages([
+      {
+        id: 1,
+        role: "assistant",
+        content: "Hello, I'm here to listen and support you. How are you feeling today?",
+      },
+    ]);
+  };
+
+  // Show loading while checking auth
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Show auth page if not logged in
+  if (!user) {
+    return <Auth onAuthSuccess={(user) => setUser(user)} />;
+  }
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
       <Sidebar 
@@ -401,6 +448,8 @@ const Index = () => {
         onSelectSession={handleSelectSession}
         onDeleteSession={handleDeleteSession}
         isLoading={sessionsLoading}
+        onLogout={handleLogout}
+        userName={user.name}
       />
 
       <main className="flex-1 flex flex-col h-full relative">

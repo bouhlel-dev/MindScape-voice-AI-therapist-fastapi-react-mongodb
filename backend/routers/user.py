@@ -1,15 +1,38 @@
 from fastapi import APIRouter, HTTPException, status
 from typing import List
-from schemas.user import UserCreate, UserResponse
+from schemas.user import UserCreate, UserResponse, UserLogin
 from services.users_service import (
     get_all_users,
     create_user,
     get_user_by_id,
     delete_user,
     update_user,
+    get_user_by_email,
+    authenticate_user,
 )
 
 router = APIRouter(prefix="/users", tags=["Users"])
+
+
+@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+async def register_user(user: UserCreate):
+    """Register a new user."""
+    # Check if email already exists
+    existing = await get_user_by_email(user.email)
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    created = await create_user(user.dict())
+    return UserResponse(id=str(created.id), name=created.name, email=created.email)
+
+
+@router.post("/login", response_model=UserResponse)
+async def login_user(user: UserLogin):
+    """Login a user."""
+    authenticated = await authenticate_user(user.email, user.password)
+    if not authenticated:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    return UserResponse(id=str(authenticated.id), name=authenticated.name, email=authenticated.email)
 
 
 @router.get("/", response_model=List[UserResponse])

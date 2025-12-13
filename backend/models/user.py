@@ -39,6 +39,7 @@ class UserInDB(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     name: str
     email: str
+    password: str = ""
 
     model_config = {
         "populate_by_name": True,

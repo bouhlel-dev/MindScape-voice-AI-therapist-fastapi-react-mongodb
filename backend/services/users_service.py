@@ -67,3 +67,21 @@ async def update_user(user_id: str, update_data: dict) -> Optional[UserInDB]:
 
     doc["id"] = str(doc["_id"])
     return UserInDB(**doc)
+
+
+async def get_user_by_email(email: str) -> Optional[UserInDB]:
+    col = get_collection()
+    doc = await col.find_one({"email": email})
+    if not doc:
+        return None
+    doc["id"] = str(doc["_id"])
+    return UserInDB(**doc)
+
+
+async def authenticate_user(email: str, password: str) -> Optional[UserInDB]:
+    user = await get_user_by_email(email)
+    if not user:
+        return None
+    if user.password != password:
+        return None
+    return user

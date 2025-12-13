@@ -79,20 +79,19 @@ export async function sendAudioMessage(userId: string, audioBlob: Blob, sessionI
   return response.json();
 }
 
-// Create a new user
-export async function createUser(email: string, name: string, password: string): Promise<UserResponse> {
-  const formData = new FormData();
-  formData.append("email", email);
-  formData.append("name", name);
-  formData.append("password", password);
-
+// Create a new user (register)
+export async function registerUser(name: string, email: string, password: string): Promise<UserResponse> {
   const response = await fetch(`${API_BASE_URL}/users/register`, {
     method: "POST",
-    body: formData,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name, email, password }),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to create user");
+    const error = await response.json().catch(() => ({ detail: "Registration failed" }));
+    throw new Error(error.detail || "Failed to create user");
   }
 
   return response.json();
@@ -100,20 +99,38 @@ export async function createUser(email: string, name: string, password: string):
 
 // Login user
 export async function loginUser(email: string, password: string): Promise<UserResponse> {
-  const formData = new FormData();
-  formData.append("email", email);
-  formData.append("password", password);
-
   const response = await fetch(`${API_BASE_URL}/users/login`, {
     method: "POST",
-    body: formData,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
   });
 
   if (!response.ok) {
-    throw new Error("Invalid credentials");
+    const error = await response.json().catch(() => ({ detail: "Invalid credentials" }));
+    throw new Error(error.detail || "Invalid credentials");
   }
 
   return response.json();
+}
+
+// Save user to localStorage
+export function saveUser(user: UserResponse): void {
+  localStorage.setItem("therapist_user", JSON.stringify(user));
+  localStorage.setItem("therapist_user_id", user.id);
+}
+
+// Get user from localStorage
+export function getStoredUser(): UserResponse | null {
+  const user = localStorage.getItem("therapist_user");
+  return user ? JSON.parse(user) : null;
+}
+
+// Clear user from localStorage
+export function clearStoredUser(): void {
+  localStorage.removeItem("therapist_user");
+  localStorage.removeItem("therapist_user_id");
 }
 
 // Backend message response (uses sender/message)

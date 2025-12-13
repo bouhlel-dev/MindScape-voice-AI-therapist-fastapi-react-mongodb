@@ -12,6 +12,8 @@ interface SidebarProps {
   onNewSession: () => void;
   onSelectSession: (sessionId: string) => void;
   onDeleteSession: (sessionId: string) => void;
+  onLogout: () => void;
+  userName: string;
   isLoading?: boolean;
 }
 
@@ -36,18 +38,11 @@ const Sidebar = ({
   onNewSession,
   onSelectSession,
   onDeleteSession,
+  onLogout,
+  userName,
   isLoading 
 }: SidebarProps) => {
   const { toast } = useToast();
-
-  const handleLogout = () => {
-    localStorage.removeItem("therapist_user_id");
-    toast({
-      title: "Logged out",
-      description: "You have been successfully logged out.",
-    });
-    window.location.reload();
-  };
 
   const handleDeleteSession = (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation();
@@ -137,17 +132,17 @@ const Sidebar = ({
 
           {/* Profile Section */}
           <div className="p-4 space-y-1 border-t border-border/50">
-            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/80 transition-all duration-200">
+            <div className="flex items-center gap-3 px-3 py-2.5">
               <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
                 <User className="h-4 w-4 text-primary" />
               </div>
               <div className="flex-1 text-left">
-                <p className="text-sm text-foreground">Profile</p>
+                <p className="text-sm font-medium text-foreground">{userName}</p>
               </div>
-            </button>
+            </div>
 
             <Button
-              onClick={handleLogout}
+              onClick={onLogout}
               variant="ghost"
               className="w-full justify-start gap-3 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10"
             >
