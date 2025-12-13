@@ -24,10 +24,7 @@ const formatDate = (dateString: string): string => {
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   
   if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  return date.toLocaleDateString();
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 };
 
 const Sidebar = ({ 
@@ -103,12 +100,12 @@ const Sidebar = ({
                     <button
                       key={session.id}
                       onClick={() => onSelectSession(session.id)}
-                      className={`w-full text-left px-3 py-2.5 rounded-xl hover:bg-secondary/80 transition-all duration-200 group flex items-center justify-between ${
+                      className={`w-full text-left px-3 py-2.5 rounded-xl hover:bg-secondary/80 transition-all duration-200 group flex items-center justify-between gap-2 ${
                         currentSessionId === session.id ? "bg-secondary" : ""
                       }`}
                     >
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-foreground truncate">
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <p className="text-sm text-foreground truncate max-w-[180px]">
                           {session.title}
                         </p>
                         <p className="text-xs text-muted-foreground/70 mt-0.5">
