@@ -1,7 +1,8 @@
 from pydantic import BaseModel, Field, GetCoreSchemaHandler
 from pydantic_core import core_schema
 from bson import ObjectId
-from typing import Any
+from typing import Any, Optional
+from datetime import datetime
 
 
 class PyObjectId(ObjectId):
@@ -30,21 +31,20 @@ class PyObjectId(ObjectId):
     def validate(cls, v):
         if isinstance(v, ObjectId):
             return v
-        if isinstance(v, str) and ObjectId.is_valid(v):
-            return ObjectId(v)
-        raise ValueError("Invalid ObjectId")
+        if not ObjectId.is_valid(v):
+            raise ValueError("Invalid ObjectId")
+        return ObjectId(v)
 
 
-class MessageInDB(BaseModel):
+class SessionInDB(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    user_id: str       # links to user _id
-    sender: str        # 'user' or 'assistant'
-    message: str
-    session_id: str = None  # links to session _id
-    timestamp: str
+    user_id: str
+    title: str
+    created_at: str
+    updated_at: str
+    is_active: bool = True
 
-    model_config = {
-        "populate_by_name": True,
-        "arbitrary_types_allowed": True,
-        "json_encoders": {ObjectId: str}
-    }
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        from_attributes = True

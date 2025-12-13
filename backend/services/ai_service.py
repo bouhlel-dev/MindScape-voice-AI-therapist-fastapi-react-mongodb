@@ -44,7 +44,7 @@ async def generate_speech(text: str) -> str:
 def get_gemini_response(user_input: str) -> str:
     payload = {
         "contents": [{"parts": [{"text": f"Be a friendly therapist, no emojis: {user_input}"}]}],
-        "generationConfig": {"maxOutputTokens": 150}
+        "generationConfig": {"maxOutputTokens": 1024}
     }
     headers = {"Content-Type": "application/json"}
 

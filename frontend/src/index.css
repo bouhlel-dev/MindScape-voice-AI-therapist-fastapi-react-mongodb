@@ -4,101 +4,100 @@
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
+Earthy Brown Theme - Minimalistic & Modern
 */
 
 @layer base {
   :root {
-    --background: 220 18% 97%;
-    --foreground: 220 15% 15%;
+    --background: 40 30% 97%;
+    --foreground: 25 20% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 15% 15%;
+    --card: 40 25% 99%;
+    --card-foreground: 25 20% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 15%;
+    --popover: 40 25% 99%;
+    --popover-foreground: 25 20% 15%;
 
-    --primary: 250 65% 58%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 25 45% 45%;
+    --primary-foreground: 40 30% 98%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 15% 20%;
+    --secondary: 35 20% 93%;
+    --secondary-foreground: 25 20% 20%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 35 15% 92%;
+    --muted-foreground: 25 10% 50%;
 
-    --accent: 280 70% 65%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 30 35% 55%;
+    --accent-foreground: 40 30% 98%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 65% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 250 65% 58%;
+    --border: 35 15% 88%;
+    --input: 35 15% 88%;
+    --ring: 25 45% 45%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
     
-    /* Sphere gradients */
-    --sphere-gradient: linear-gradient(135deg, hsl(220 80% 60%), hsl(270 75% 60%), hsl(310 70% 65%));
-    --sphere-glow: 0 0 60px hsla(270 75% 60% / 0.4);
+    /* Sphere gradients - earthy tones */
+    --sphere-gradient: linear-gradient(135deg, hsl(30 50% 55%), hsl(25 45% 45%), hsl(20 40% 40%));
+    --sphere-glow: 0 0 60px hsla(30 50% 50% / 0.35);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 40 25% 98%;
+    --sidebar-foreground: 25 15% 25%;
+    --sidebar-primary: 25 45% 45%;
+    --sidebar-primary-foreground: 40 30% 98%;
+    --sidebar-accent: 35 20% 94%;
+    --sidebar-accent-foreground: 25 20% 20%;
+    --sidebar-border: 35 15% 90%;
+    --sidebar-ring: 25 45% 45%;
   }
 
   .dark {
-    --background: 220 20% 12%;
-    --foreground: 220 10% 95%;
+    --background: 25 20% 8%;
+    --foreground: 35 15% 92%;
 
-    --card: 220 18% 16%;
-    --card-foreground: 220 10% 95%;
+    --card: 25 18% 12%;
+    --card-foreground: 35 15% 92%;
 
-    --popover: 220 18% 16%;
-    --popover-foreground: 220 10% 95%;
+    --popover: 25 18% 12%;
+    --popover-foreground: 35 15% 92%;
 
-    --primary: 250 65% 58%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 30 45% 50%;
+    --primary-foreground: 25 20% 10%;
 
-    --secondary: 220 15% 20%;
-    --secondary-foreground: 220 10% 95%;
+    --secondary: 25 15% 18%;
+    --secondary-foreground: 35 15% 90%;
 
-    --muted: 220 15% 20%;
-    --muted-foreground: 220 10% 65%;
+    --muted: 25 12% 20%;
+    --muted-foreground: 35 10% 60%;
 
-    --accent: 280 70% 65%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 30 40% 55%;
+    --accent-foreground: 25 20% 10%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 65% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 25%;
-    --input: 220 15% 25%;
-    --ring: 250 65% 58%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 25 12% 22%;
+    --input: 25 12% 22%;
+    --ring: 30 45% 50%;
+    
+    /* Dark sphere gradients */
+    --sphere-gradient: linear-gradient(135deg, hsl(30 45% 50%), hsl(25 40% 40%), hsl(20 35% 35%));
+    --sphere-glow: 0 0 60px hsla(30 45% 45% / 0.4);
+    
+    --sidebar-background: 25 18% 10%;
+    --sidebar-foreground: 35 15% 90%;
+    --sidebar-primary: 30 45% 50%;
+    --sidebar-primary-foreground: 25 20% 10%;
+    --sidebar-accent: 25 12% 16%;
+    --sidebar-accent-foreground: 35 15% 90%;
+    --sidebar-border: 25 12% 18%;
+    --sidebar-ring: 30 45% 50%;
   }
 }
 
@@ -116,7 +115,6 @@ All colors MUST be HSL.
   .liquid-sphere {
     animation: morph 8s ease-in-out infinite, float 6s ease-in-out infinite;
     background: var(--sphere-gradient);
-    filter: blur(1px);
   }
   
   .liquid-sphere-active {
@@ -149,10 +147,25 @@ All colors MUST be HSL.
   
   @keyframes pulse {
     0%, 100% {
-      box-shadow: 0 0 40px hsla(270 75% 60% / 0.4);
+      box-shadow: 0 0 40px hsla(30 50% 50% / 0.35);
     }
     50% {
-      box-shadow: 0 0 80px hsla(270 75% 60% / 0.6);
+      box-shadow: 0 0 80px hsla(30 50% 50% / 0.55);
     }
+  }
+  
+  /* Floating card style */
+  .floating-card {
+    @apply bg-card/80 backdrop-blur-xl rounded-2xl shadow-lg border border-border/50;
+  }
+  
+  /* Floating input style */
+  .floating-input {
+    @apply bg-background/60 backdrop-blur-md border-0 rounded-xl shadow-sm focus:shadow-md transition-shadow;
+  }
+  
+  /* Floating button style */
+  .floating-btn {
+    @apply rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105;
   }
 }
